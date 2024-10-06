@@ -1,3 +1,5 @@
+from BD import bdn
+
 # Step 1: Remove duplicates from the data
 def remove_duplicates(input_file, temp_file1):
     with open(input_file, 'r') as infile, open(temp_file1, 'w') as outfile:
@@ -40,12 +42,12 @@ def process_names(temp_file2, temp_file3):
 
 # Step 4: Check BD name in tempfile 3 (Modify this to fit your BD name checking logic)
 def check_bd_names(temp_file3, output_file):
-    bd_name_criteria = ["specific BD criteria"]  # Define your BD name check logic here
+    # List of BD names to keep
+    names_to_keep = ["Abdul", "Akhtar"]
+    
     with open(temp_file3, 'r') as infile, open(output_file, 'w') as outfile:
-        for line in infile:
-            uid, name = line.strip().split('|')
-            if any(criterion in name for criterion in bd_name_criteria):
-                outfile.write(line)  # Save only BD names
+        filtered_data = [line for line in infile if any(name == line.strip().split("|")[1] for name in bdn)]
+        outfile.writelines(filtered_data) # Save only BD names
 
 # Main logic
 input_file = '/sdcard/1.txt'
