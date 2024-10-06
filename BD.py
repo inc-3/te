@@ -1,4 +1,4 @@
-names_to_keep = ["Abdul", "Akhtar", "Ali", "Amin", "Anis", "Asif", "Aziz", "Bashir", "Bilal",
+bdn = ["Abdul", "Akhtar", "Ali", "Amin", "Anis", "Asif", "Aziz", "Bashir", "Bilal",
     "Faisal", "Farhan", "Habib", "Hassan", "Hossain", "Imran", "Iqbal", "Jamil", "Kamal", "Karim", 
     "Khan", "Mahmud", "Moin", "Monir", "Nasir", "Nawaz", "Rahim", "Rashid", "Rehman", "Salim", 
     "Sami", "Shahid", "Sharif", "Tariq", "Yasin", "Zaman", "Salman", "Wajid", "Sk", "Rahman", 
