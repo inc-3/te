@@ -2,7 +2,7 @@ bdn = ["Abdul", "Akhtar", "Ali", "Amin", "Anis", "Asif", "Aziz", "Bashir", "Bila
     "Faisal", "Farhan", "Habib", "Hassan", "Hossain", "Imran", "Iqbal", "Jamil", "Kamal", "Karim", 
     "Khan", "Mahmud", "Moin", "Monir", "Nasir", "Nawaz", "Rahim", "Rashid", "Rehman", "Salim", 
     "Sami", "Shahid", "Sharif", "Tariq", "Yasin", "Zaman", "Salman", "Wajid", "Sk", "Rahman", 
-    "Hasan", "Jahan", "Parvez", "Shakil", "Shahin", "Sohel", "Tarek", "Sajjad", "Raju", "Shamim", 
+    "Hasan", "Parvez", "Shakil", "Shahin", "Sohel", "Tarek", "Sajjad", "Raju", "Shamim", 
     "Sumon", "Shahed", "Shakib", "Arif", "Sabbir", "Noman", "Shafi", "Shah", "Shahriar", "Tanvir", 
     "Rafi", "Masud", "Rafiq", "Rakib", "Sobuj", "Shuvo", "Faruk", "Nayeem", "Mehedi", "Munna", 
     "Anwar", "Kabir", "Shuvo", "Rajib", "Sohag", "Sajib", "Rony", "Sakib", "Shahjalal", "Nasim", 
