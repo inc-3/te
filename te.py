@@ -1,4 +1,4 @@
-import bdn
+from BD import bdn
 
 def remove_duplicates(input_file, temp_file1):
     with open(input_file, 'r') as infile, open(temp_file1, 'w') as outfile:
