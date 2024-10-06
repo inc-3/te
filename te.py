@@ -54,7 +54,7 @@ def check_bd_names(temp_file3, output_file, temp_file2):
                         name = " ".join(name_parts[1:])  # Remove the prefix
                     outfile.write(f"{uid}|{name}\n")  # Save updated name to output file
 
-input_file = '/sdcard/1.txt'
+input_file = input("Input file")
 temp_file1 = '/sdcard/temp1.txt'
 temp_file2 = '/sdcard/temp2.txt'
 temp_file3 = '/sdcard/temp3.txt'
