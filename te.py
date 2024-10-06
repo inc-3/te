@@ -12,9 +12,22 @@ def remove_duplicates(input_file, temp_file1):
 # Step 2: Separate Md names into tempfile1
 def separate_md_names(temp_file1, temp_file2):
     prefixes = ["Md", "Md.", "MD", "Sk"]
-    with open(temp_file1, 'r') as infile, open(temp_file2, 'w') as outfile:
-        md_lines = [line for line in infile if any(prefix in line.split("|")[1].split()[0] for prefix in prefixes)]
+    
+    # Read from temp_file1
+    with open(temp_file1, 'r') as infile:
+        lines = infile.readlines()
+
+    # Separate MD lines and non-MD lines
+    md_lines = [line for line in lines if any(prefix in line.split("|")[1].split()[0] for prefix in prefixes)]
+    non_md_lines = [line for line in lines if line not in md_lines]
+    
+    # Write MD lines to temp_file2
+    with open(temp_file2, 'w') as outfile:
         outfile.writelines(md_lines)
+
+    # Overwrite temp_file1 with non-MD lines
+    with open(temp_file1, 'w') as outfile:
+        outfile.writelines(non_md_lines)
 
 # Step 3: Process names and save in temp file 2
 def process_names(temp_file2, temp_file3):
