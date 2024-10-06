@@ -26,12 +26,12 @@ def separate_md_names(temp_file1, temp_file2):
         outfile.writelines(md_lines)
 
     # Overwrite temp_file1 with non-MD lines
-    with open(temp_file1, 'w') as outfile:
+    with open(input_file, 'w') as outfile:
         outfile.writelines(non_md_lines)
 
 # Step 3: Process names and save in temp file 2
-def process_names(temp_file1, temp_file3):
-    with open(temp_file1, 'r') as infile, open(temp_file3, 'w') as outfile:
+def process_names(input_file, temp_file3):
+    with open(input_file, 'r') as infile, open(temp_file3, 'w') as outfile:
         for line in infile:
             parts = line.strip().split('|')
             if len(parts) == 2:
