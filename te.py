@@ -30,7 +30,7 @@ def separate_md_names(temp_file1, temp_file2):
         outfile.writelines(non_md_lines)
 
 # Step 3: Process names and save in temp file 2
-def process_names(temp_file2, temp_file3):
+def process_names(temp_file1, temp_file3):
     with open(temp_file2, 'r') as infile, open(temp_file3, 'w') as outfile:
         for line in infile:
             parts = line.strip().split('|')
