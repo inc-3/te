@@ -16,7 +16,7 @@ def process_uid_names():
 
                     # If there are more than one name parts, keep only the first name
                     if len(name_parts) > 1:
-                        first_name = name_parts[0]
+                        first_name = name_parts[1]
                         # Write the UID and first name only
                         outfile.write(f"{uid}|{first_name}\n")
                     else:
