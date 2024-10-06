@@ -1,43 +1,61 @@
-def process_uid_names():
-    # Ask user for input and output file paths
-    input_file = input("Enter the input file path: ")
-    output_file = input("Enter the output file path: ")
+# Step 1: Remove duplicates from the data
+def remove_duplicates(input_file, temp_file1):
+    with open(input_file, 'r') as infile, open(temp_file1, 'w') as outfile:
+        seen = set()
+        for line in infile:
+            if line not in seen:
+                outfile.write(line)
+                seen.add(line)
 
-    try:
-        with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
-            for line in infile:
-                # Split the UID and name parts
-                parts = line.strip().split('|')
+# Step 2: Separate Md names into tempfile1
+def separate_md_names(temp_file1, temp_file2):
+    prefixes = ["Md", "Md.", "MD", "Sk"]
+    with open(temp_file1, 'r') as infile, open(temp_file2, 'w') as outfile:
+        md_lines = [line for line in infile if any(prefix in line.split("|")[1].split()[0] for prefix in prefixes)]
+        outfile.writelines(md_lines)
 
-                if len(parts) == 2:
-                    uid, name = parts
-                    # Split the name into parts (first, middle, last)
-                    name_parts = name.split()
+# Step 3: Process names and save in temp file 2
+def process_names(temp_file2, temp_file3):
+    with open(temp_file2, 'r') as infile, open(temp_file3, 'w') as outfile:
+        for line in infile:
+            parts = line.strip().split('|')
+            if len(parts) == 2:
+                uid, name = parts
+                name_parts = name.split()
 
-                    if len(name_parts) == 3:
-                        # If the name has three parts, write first, middle, and last name separately
-                        first_name = name_parts[0]
-                        middle_name = name_parts[1]
-                        last_name = name_parts[2]
-                        outfile.write(f"{uid}|{first_name}\n")
-                        outfile.write(f"{uid}|{middle_name}\n")
-                        outfile.write(f"{uid}|{last_name}\n")
-                    elif len(name_parts) == 2:
-                        # If the name has two parts, write the first and last name separately
-                        first_name = name_parts[0]
-                        last_name = name_parts[1]
-                        outfile.write(f"{uid}|{first_name}\n")
-                        outfile.write(f"{uid}|{last_name}\n")
-                    else:
-                        # If there's only one part, write it as is
-                        outfile.write(f"{uid}|{name}\n")
+                if len(name_parts) == 3:
+                    # Split into first, middle, and last name
+                    first_name, middle_name, last_name = name_parts
+                    outfile.write(f"{uid}|{first_name}\n")
+                    outfile.write(f"{uid}|{middle_name}\n")
+                    outfile.write(f"{uid}|{last_name}\n")
+                elif len(name_parts) == 2:
+                    # Split into first and last name
+                    first_name, last_name = name_parts
+                    outfile.write(f"{uid}|{first_name}\n")
+                    outfile.write(f"{uid}|{last_name}\n")
+                else:
+                    # Only one name part
+                    outfile.write(f"{uid}|{name}\n")
 
-        print(f"Processing complete. Output saved to {output_file}")
+# Step 4: Check BD name in tempfile 3 (Modify this to fit your BD name checking logic)
+def check_bd_names(temp_file3, output_file):
+    bd_name_criteria = ["specific BD criteria"]  # Define your BD name check logic here
+    with open(temp_file3, 'r') as infile, open(output_file, 'w') as outfile:
+        for line in infile:
+            uid, name = line.strip().split('|')
+            if any(criterion in name for criterion in bd_name_criteria):
+                outfile.write(line)  # Save only BD names
 
-    except FileNotFoundError:
-        print("Error: The input file was not found.")
-    except Exception as e:
-        print(f"An error occurred: {e}")
+# Main logic
+input_file = '/sdcard/1.txt'
+temp_file1 = '/sdcard/temp1.txt'
+temp_file2 = '/sdcard/temp2.txt'
+temp_file3 = '/sdcard/temp3.txt'
+output_file = '/sdcard/y.txt'
 
-# Call the function to run
-process_uid_names()
+# Execute steps
+remove_duplicates(input_file, temp_file1)
+separate_md_names(temp_file1, temp_file2)
+process_names(temp_file2, temp_file3)
+check_bd_names(temp_file3, output_file)
