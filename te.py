@@ -39,18 +39,20 @@ def process_names(temp_file1, temp_file3):
                     outfile.write(f"{uid}|{name}\n")
 
 def check_bd_names(temp_file3, output_file, temp_file2):
-    with open(temp_file3, 'r') as infile, open(output_file, 'w') as outfile:
-        filtered_data = [line for line in infile if any(name == line.strip().split("|")[1] for name in bdn)]
-        outfile.writelines(filtered_data)
-    with open(temp_file2, 'r') as infile2:
-        for line in infile2:
-            parts = line.strip().split('|')
-            if len(parts) == 2:
-                uid, name = parts
-                name_parts = name.split()
-                if len(name_parts) > 0 and name_parts[0] in ["Md", "MD", "Sk", "Md.", "Mst"]:
-                    name = " ".join(name_parts[1:])  # Remove the prefix
-                outfile.write(f"{uid}|{name}\n")  # Save temp_file2 into the output file
+    with open(output_file, 'w') as outfile:  # Open output file once
+        with open(temp_file3, 'r') as infile:
+            filtered_data = [line for line in infile if any(name == line.strip().split("|")[1] for name in bdn)]
+            outfile.writelines(filtered_data)
+
+        with open(temp_file2, 'r') as infile2:
+            for line in infile2:
+                parts = line.strip().split('|')
+                if len(parts) == 2:
+                    uid, name = parts
+                    name_parts = name.split()
+                    if len(name_parts) > 0 and name_parts[0] in ["Md", "MD", "Sk", "Md.", "Mst"]:
+                        name = " ".join(name_parts[1:])  # Remove the prefix
+                    outfile.write(f"{uid}|{name}\n")  # Save updated name to output file
 
 input_file = '/sdcard/1.txt'
 temp_file1 = '/sdcard/temp1.txt'
