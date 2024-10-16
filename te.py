@@ -39,7 +39,7 @@ def process_names(temp_file1, temp_file3):
                     outfile.write(f"{uid}|{name}\n")
 
 def check_bd_names(temp_file3, output_file, temp_file2):
-    with open(output_file, 'w') as outfile:  # Open output file once
+    with open(output_file, 'r') as outfile:  # Open output file once
         with open(temp_file3, 'r') as infile:
             filtered_data = [line for line in infile if any(name == line.strip().split("|")[1] for name in bdn)]
             outfile.writelines(filtered_data)
