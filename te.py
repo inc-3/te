@@ -10,12 +10,32 @@ def remove_duplicates(input_file, temp_file1):
 
 def separate_md_names(temp_file1, temp_file2):
     prefixes = ["Md", "Md.", "MD", "Sk"]
+    
+    # Read from temp_file1
     with open(temp_file1, 'r') as infile:
         lines = infile.readlines()
-    md_lines = [line for line in lines if any(prefix in line.split("|")[1].split()[0] for prefix in prefixes)]
-    non_md_lines = [line for line in lines if line not in md_lines]
+
+    # Separate MD lines and non-MD lines
+    md_lines = []
+    non_md_lines = []
+
+    for line in lines:
+        parts = line.strip().split("|")
+        if len(parts) == 2:  # Ensure line has both UID and name
+            uid, name = parts
+            name_parts = name.split()
+            if len(name_parts) > 0 and any(prefix in name_parts[0] for prefix in prefixes):
+                md_lines.append(line)
+            else:
+                non_md_lines.append(line)
+        else:
+            non_md_lines.append(line)  # If the line is malformed, keep it in non-MD lines
+
+    # Write MD lines to temp_file2
     with open(temp_file2, 'w') as outfile:
         outfile.writelines(md_lines)
+
+    # Overwrite temp_file1 with non-MD lines
     with open(temp_file1, 'w') as outfile:
         outfile.writelines(non_md_lines)
 
