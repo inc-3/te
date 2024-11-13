@@ -68,7 +68,7 @@ def check_bd_names(temp_file3, output_file, temp_file2):
                     outfile.write(f"{uid}|{name}\n")
 
 def remove_specific_names(output_file, final_output_file):
-    names_to_exclude = ["Rahman", "Rakibul"]
+    names_to_exclude = [ "Ahmed", "Rahman", "Hossain", "Alam", "Ullah", "Uddin", "Islam", "Haque", "Siddiqui", "Karim", "Chowdhury", "Ali", "Kamal", "Mahmud", "Mollah", "Bashar", "Mohammad"]
     with open(output_file, 'r') as infile, open(final_output_file, 'w') as outfile:
         for line in infile:
             parts = line.strip().split('|')
