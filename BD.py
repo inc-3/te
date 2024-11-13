@@ -68,4 +68,6 @@ bdn = ["Abdul", "Amin", "Anis", "Asif", "Aziz", "Bashir", "Bilal",
     "Salman", "Samad", "Samir", "Sanjoy", "Sarwar", "Saud", "Sazzad", "Shahidul", "Shahed", "Shahedul", "Shahriar", 
     "Shakibul", "Shamimul", "Shariful", "Shaukat", "Sohail", "Sujan", "Sumon", "Suruj", "Syed", "Tajul", "Tamal", 
     "Tanveer", "Tariqul", "Taufiqur", "Tipu", "Toufique", "Touhidul", "Uzzal", "Wasim", "Yasinul", "Yunus", 
-    "Zahirul", "Zakariah", "Zayed", "Ziaul", "Zillur", "Zubayer", "Zulfiqar", "Shipon", "Shopon", "Sadikul"]
+    "Zahirul", "Zakariah", "Zayed", "Ziaul", "Zillur", "Zubayer", "Zulfiqar", "Shipon", "Shopon", "Sadikul",
+    "Ahmed", "Rahman", "Hossain", "Alam", "Ullah", "Uddin", "Islam", "Haque",
+    "Siddiqui", "Karim", "Chowdhury", "Ali", "Kamal", "Mahmud", "Mollah", "Bashar",]
