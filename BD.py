@@ -122,7 +122,7 @@ bdn = ["Abdul", "Amin", "Anis", "Asif", "Aziz", "Bashir", "Bilal",
     "Ashiqul", "Shakawatul", "Shaikhul", "Fakhrul", "Sazzadur", "Zayedul", "Kafi", "Basharul", "Shamsurrahman", "Armin",
     "Rayhanuzzaman", "Wasifur", "Arfin", "Minhazur", "Rajinuzzaman", "Arfan", "Taifur", "Asimuzzaman", "Rimonuzzaman", "Rukanuzzaman",
     "Zikrullah", "Shahibul", "Arefin", "Sohailur", "Siddiqur", "Ashrafuzzamanul", "Nazmulhaque", "Raiyanuzzaman", "Hasinur", "Mustafa",
-    "Saaduzzaman", "Sayemuzzaman", "Tariquzzaman", "Nazifur", "Tarekuzzaman", "Sadekuzzaman", "Ammarul", "Arizur", "Shahjahan", "Nasiruzzaman"
+    "Saaduzzaman", "Sayemuzzaman", "Tariquzzaman", "Nazifur", "Tarekuzzaman", "Sadekuzzaman", "Ammarul", "Arizur", "Shahjahan", "Nasiruzzaman", 
     "Iftakhar", "Murshed", "Shihabul", "Kamalul", "Saifan", "Asiful", "Raziul", "Younis", "Nashid", "Mazid",
     "Hasmat", "Shohrob", "Rakin", "Shaifur", "Shamrat", "Munibur", "Tawhid", "Ajwad", "Iskandar", "Rakibul",
     "Sharmin", "Zillur", "Amzadul", "Mehmood", "Jisan", "Manzoor", "Zahur", "Jahidur", "Elahi", "Mashuk",
