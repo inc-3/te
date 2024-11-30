@@ -53,8 +53,33 @@ def process_names(input_file, temp_file):
                 else:
                     outfile.write(f"{uid}|{name}\n")
 
+def process_files(input_file, output_file):
+    temp_file1 = 'temp1.txt'
+    temp_file2 = 'temp2.txt'
+    temp_file3 = 'temp3.txt'
+    temp_file4 = 'temp4.txt'
+
+    # Step 1: Remove duplicates (must complete before the next step)
+    remove_duplicates(input_file, temp_file1)
+
+    # Step 2: Separate MD names (must complete before processing names)
+    separate_md_names(temp_file1, temp_file2)
+
+    # Step 3: Process names (can be done in parallel with other independent tasks)
+    process_names(temp_file1, temp_file3)
+
+    # Step 4: Optimized check_bd_names and remove_specific_names
+    check_bd_names(temp_file3, temp_file4, temp_file2)
+    remove_specific_names(temp_file4, output_file)
+
+    # Clean up temporary files
+    os.remove(temp_file1)
+    os.remove(temp_file2)
+    os.remove(temp_file3)
+    os.remove(temp_file4)
+
 def check_bd_names(input_file, temp_file, temp_file2):
-    bdn_set = set(bdn)  # Convert to a set for faster lookup
+    bdn_set = set(bdn)
 
     def process_chunk(lines, output_list):
         local_output = []
@@ -71,24 +96,21 @@ def check_bd_names(input_file, temp_file, temp_file2):
                         local_output.append(f"{uid}|{name}\n")
         output_list.extend(local_output)
 
-    # Read input file in chunks and process in parallel
     with open(input_file, 'r') as infile:
         lines = infile.readlines()
 
-    chunk_size = max(1, len(lines) // 15)  # Divide into 15 chunks
+    chunk_size = max(1, len(lines) // 15)
     chunks = [lines[i:i + chunk_size] for i in range(0, len(lines), chunk_size)]
     output_data = []
 
     with ThreadPoolExecutor(max_workers=15) as executor:
         futures = [executor.submit(process_chunk, chunk, output_data) for chunk in chunks]
         for future in futures:
-            future.result()  # Wait for all chunks to complete
+            future.result()
 
-    # Write results to the temp file
     with open(temp_file, 'w') as outfile:
         outfile.writelines(output_data)
 
-    # Process temp_file2 sequentially
     with open(temp_file2, 'r') as infile2:
         with open(temp_file, 'a') as outfile:
             for line in infile2:
@@ -101,7 +123,10 @@ def check_bd_names(input_file, temp_file, temp_file2):
                     outfile.write(f"{uid}|{name}\n")
 
 def remove_specific_names(input_file, output_file):
-    names_to_exclude = [ "Ahmed", "Rahman", "Hossain", "Alam", "Ullah", "Uddin", "Islam", "Haque", "Siddiqui", "Karim", "Chowdhury", "Ali", "Kamal", "Mahmud", "Mollah", "Bashar", "Mohammad", "Hasan"]
+    names_to_exclude = [
+        "Ahmed", "Rahman", "Hossain", "Alam", "Ullah", "Uddin", "Islam", "Haque", "Siddiqui", 
+        "Karim", "Chowdhury", "Ali", "Kamal", "Mahmud", "Mollah", "Bashar", "Mohammad", "Hasan"
+    ]
     with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
         for line in infile:
             parts = line.strip().split('|')
@@ -109,33 +134,6 @@ def remove_specific_names(input_file, output_file):
                 uid, name = parts
                 if name not in names_to_exclude:
                     outfile.write(line)
-
-def process_files(input_file, output_file):
-    temp_file1 = 'temp1.txt'
-    temp_file2 = 'temp2.txt'
-    temp_file3 = 'temp3.txt'
-    temp_file4 = 'temp4.txt'
-
-    # Use ThreadPoolExecutor for parallel execution
-    with ThreadPoolExecutor(max_workers=15) as executor:
-        future1 = executor.submit(remove_duplicates, input_file, temp_file1)
-        future2 = executor.submit(separate_md_names, temp_file1, temp_file2)
-        future3 = executor.submit(process_names, temp_file1, temp_file3)
-
-        # Wait for all tasks to complete
-        future1.result()
-        future2.result()
-        future3.result()
-
-    # Optimized check_bd_names
-    check_bd_names(temp_file3, temp_file4, temp_file2)
-    remove_specific_names(temp_file4, output_file)
-
-    # Clean up temporary files
-    os.remove(temp_file1)
-    os.remove(temp_file2)
-    os.remove(temp_file3)
-    os.remove(temp_file4)
 
 # Input and output files
 input_file = input("Input file: ")
