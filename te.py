@@ -11,7 +11,7 @@ def remove_duplicates(input_file, temp_file1):
                 seen.add(line)
 
 def separate_md_names(temp_file1, temp_file2):
-    prefixes = ["Md", "Md.", "MD", "Sk"]
+    prefixes = ["Md", "Md.", "MD", "Sk", "Mst"]
     with open(temp_file1, 'r') as infile:
         lines = infile.readlines()
     md_lines = []
