@@ -100,7 +100,7 @@ def remove_specific_names(temp_file4, output_file, names_to_exclude):
                     
     os.remove(temp_file1)
     os.remove(temp_file2)
-    ##os.remove(temp_file3)
+    os.remove(temp_file3)
     os.remove(temp_file4)
 
 input_file = input("Input file: ")
@@ -108,7 +108,7 @@ temp_file1 = '/sdcard/temp1.txt'
 temp_file2 = '/sdcard/temp2.txt'
 temp_file3 = '/sdcard/temp3.txt'
 temp_file4 = '/sdcard/temp4.txt'
-output_file = '/sdcard/final_output.txt'
+output_file = input(" Output file: ")
 
 prefixes = {"Md", "Md.", "MD", "Sk", "Mst"}
 names_to_exclude = {"Ahmed", "Rahman", "Hossain", "Alam", "Ullah", "Uddin", "Islam", "Haque", "Siddiqui", "Karim", "Chowdhury", "Ali", "Kamal", "Mahmud", "Mollah", "Bashar", "Mohammad", "Hasan"}
