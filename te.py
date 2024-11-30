@@ -95,7 +95,7 @@ def check_bd_names(temp_file3, temp_file4, temp_file2):
                 if len(parts) == 2:
                     uid, name = parts
                     name_parts = name.split()
-                    if len(name_parts) > 0 and name_parts[0] in ["Md", "MD", "Sk", "Md.", "Mst"]:
+                    if len(name_parts) > 0 and name_parts[0] in ["Md", "MD", "Sk", "Md."]:
                         name = " ".join(name_parts[1:])
                     outfile.write(f"{uid}|{name}\n")
 
