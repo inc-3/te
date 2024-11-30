@@ -100,7 +100,7 @@ def remove_specific_names(temp_file4, output_file, names_to_exclude):
                     
     os.remove(temp_file1)
     os.remove(temp_file2)
-    os.remove(temp_file3)
+    ##os.remove(temp_file3)
     os.remove(temp_file4)
 
 input_file = input("Input file: ")
