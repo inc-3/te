@@ -141,4 +141,4 @@ def process_files(input_file, output_file):
 input_file = input("Input file: ")
 output_file = input("Output file: ")
 
-process_files(input_file, tempfile4, output_file)
+process_files(input_file, temp_file4, output_file)
