@@ -1,5 +1,6 @@
-from BD import bdn
 from concurrent.futures import ThreadPoolExecutor
+import os
+from BD import bdn
 
 def remove_duplicates(input_file, temp_file1):
     with open(input_file, 'r') as infile, open(temp_file1, 'w') as outfile:
@@ -76,39 +77,44 @@ def process_file_for_prefix_removal(temp_file, prefixes_to_remove):
                 processed_lines.append(f"{uid}|{name}\n")
     return processed_lines
 
-def check_bd_names(temp_file3, output_file, temp_file2, prefixes_to_remove):
+def check_bd_names(temp_file3, temp_file4, temp_file2, prefixes_to_remove):
     bdn_set = set(bdn)
 
-    with ThreadPoolExecutor(max_workers=60) as executor:
+    with ThreadPoolExecutor(max_workers=2) as executor:
         future1 = executor.submit(process_file_for_bd_names, temp_file3, bdn_set)
         future2 = executor.submit(process_file_for_prefix_removal, temp_file2, prefixes_to_remove)
 
         processed_lines = future1.result() + future2.result()
 
-    with open(output_file, 'w') as outfile:
+    with open(temp_file4, 'w') as outfile:
         outfile.writelines(processed_lines)
 
-def remove_specific_names(output_file, final_output_file, names_to_exclude):
-    with open(output_file, 'r') as infile, open(final_output_file, 'w') as outfile:
+def remove_specific_names(temp_file4, output_file, names_to_exclude):
+    with open(temp_file4, 'r') as infile, open(output_file, 'w') as outfile:
         for line in infile:
             parts = line.strip().split('|')
             if len(parts) == 2:
                 uid, name = parts
                 if name not in names_to_exclude:
                     outfile.write(line)
+                    
+    os.remove(temp_file1)
+    os.remove(temp_file2)
+    os.remove(temp_file3)
+    os.remove(temp_file4)
 
 input_file = input("Input file: ")
 temp_file1 = '/sdcard/temp1.txt'
 temp_file2 = '/sdcard/temp2.txt'
 temp_file3 = '/sdcard/temp3.txt'
-output_file = '/sdcard/y.txt'
-final_output_file = '/sdcard/final_output.txt'
+temp_file4 = '/sdcard/temp4.txt'
+output_file = '/sdcard/final_output.txt'
 
 prefixes = {"Md", "Md.", "MD", "Sk", "Mst"}
-names_to_exclude = {"Rahaman", "Rakibul"}
+names_to_exclude = {"Ahmed", "Rahman", "Hossain", "Alam", "Ullah", "Uddin", "Islam", "Haque", "Siddiqui", "Karim", "Chowdhury", "Ali", "Kamal", "Mahmud", "Mollah", "Bashar", "Mohammad", "Hasan"}
 
 remove_duplicates(input_file, temp_file1)
 separate_md_names(temp_file1, temp_file2)
 process_names(temp_file1, temp_file3)
-check_bd_names(temp_file3, output_file, temp_file2, prefixes)
-remove_specific_names(output_file, final_output_file, names_to_exclude)
+check_bd_names(temp_file3, temp_file4, temp_file2, prefixes)
+remove_specific_names(temp_file4, output_file, names_to_exclude)
