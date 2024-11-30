@@ -1,4 +1,5 @@
 from BD import bdn
+from concurrent.futures import ThreadPoolExecutor
 
 def remove_duplicates(input_file, temp_file1):
     with open(input_file, 'r') as infile, open(temp_file1, 'w') as outfile:
@@ -20,55 +21,74 @@ def separate_md_names(temp_file1, temp_file2):
         if len(parts) == 2:
             uid, name = parts
             name_parts = name.split()
-            if len(name_parts) > 0 and any(prefix in name_parts[0] for prefix in prefixes):
+            if len(name_parts) > 0 and name_parts[0] in prefixes:
                 md_lines.append(line)
             else:
                 non_md_lines.append(line)
         else:
             non_md_lines.append(line)
 
-    with open(temp_file2, 'w') as outfile:
-        outfile.writelines(md_lines)
-    with open(temp_file1, 'w') as outfile:
-        outfile.writelines(non_md_lines)
+    with open(temp_file2, 'w') as md_out, open(temp_file1, 'w') as non_md_out:
+        md_out.writelines(md_lines)
+        non_md_out.writelines(non_md_lines)
 
 def process_names(temp_file1, temp_file3):
-    with open(temp_file1, 'r') as infile, open(temp_file3, 'w') as outfile:
+    processed_lines = []
+    with open(temp_file1, 'r') as infile:
         for line in infile:
             parts = line.strip().split('|')
             if len(parts) == 2:
                 uid, name = parts
                 name_parts = name.split()
                 if len(name_parts) == 3:
-                    first_name, middle_name, last_name = name_parts
-                    outfile.write(f"{uid}|{first_name}\n")
-                    outfile.write(f"{uid}|{middle_name}\n")
-                    outfile.write(f"{uid}|{last_name}\n")
+                    processed_lines.append(f"{uid}|{name_parts[0]}\n")
+                    processed_lines.append(f"{uid}|{name_parts[1]}\n")
+                    processed_lines.append(f"{uid}|{name_parts[2]}\n")
                 elif len(name_parts) == 2:
-                    first_name, last_name = name_parts
-                    outfile.write(f"{uid}|{first_name}\n")
-                    outfile.write(f"{uid}|{last_name}\n")
+                    processed_lines.append(f"{uid}|{name_parts[0]}\n")
+                    processed_lines.append(f"{uid}|{name_parts[1]}\n")
                 else:
-                    outfile.write(f"{uid}|{name}\n")
+                    processed_lines.append(f"{uid}|{name}\n")
+    with open(temp_file3, 'w') as outfile:
+        outfile.writelines(processed_lines)
 
-def check_bd_names(temp_file3, output_file, temp_file2):
-    with open(output_file, 'a') as outfile:
-        with open(temp_file3, 'r') as infile:
-            filtered_data = [line for line in infile if any(name == line.strip().split("|")[1] for name in bdn)]
-            outfile.writelines(filtered_data)
+def process_file_for_bd_names(temp_file, bdn_set):
+    processed_lines = []
+    with open(temp_file, 'r') as infile:
+        for line in infile:
+            parts = line.strip().split('|')
+            if len(parts) == 2:
+                uid, name = parts
+                if name in bdn_set:
+                    processed_lines.append(line)
+    return processed_lines
 
-        with open(temp_file2, 'r') as infile2:
-            for line in infile2:
-                parts = line.strip().split('|')
-                if len(parts) == 2:
-                    uid, name = parts
-                    name_parts = name.split()
-                    if len(name_parts) > 0 and name_parts[0] in ["Md", "MD", "Sk", "Md.", "Mst"]:
-                        name = " ".join(name_parts[1:])
-                    outfile.write(f"{uid}|{name}\n")
+def process_file_for_prefix_removal(temp_file, prefixes_to_remove):
+    processed_lines = []
+    with open(temp_file, 'r') as infile:
+        for line in infile:
+            parts = line.strip().split('|')
+            if len(parts) == 2:
+                uid, name = parts
+                name_parts = name.split()
+                if len(name_parts) > 0 and name_parts[0] in prefixes_to_remove:
+                    name = " ".join(name_parts[1:])
+                processed_lines.append(f"{uid}|{name}\n")
+    return processed_lines
 
-def remove_specific_names(output_file, final_output_file):
-    names_to_exclude = ["Ahmed", "Rahman", "Hossain", "Alam", "Ullah", "Uddin", "Islam", "Haque", "Siddiqui", "Karim", "Chowdhury", "Ali", "Kamal", "Mahmud", "Mollah", "Bashar", "Mohammad", "Hasan"]
+def check_bd_names(temp_file3, output_file, temp_file2, prefixes_to_remove):
+    bdn_set = set(bdn)
+
+    with ThreadPoolExecutor(max_workers=60) as executor:
+        future1 = executor.submit(process_file_for_bd_names, temp_file3, bdn_set)
+        future2 = executor.submit(process_file_for_prefix_removal, temp_file2, prefixes_to_remove)
+
+        processed_lines = future1.result() + future2.result()
+
+    with open(output_file, 'w') as outfile:
+        outfile.writelines(processed_lines)
+
+def remove_specific_names(output_file, final_output_file, names_to_exclude):
     with open(output_file, 'r') as infile, open(final_output_file, 'w') as outfile:
         for line in infile:
             parts = line.strip().split('|')
@@ -84,8 +104,11 @@ temp_file3 = '/sdcard/temp3.txt'
 output_file = '/sdcard/y.txt'
 final_output_file = '/sdcard/final_output.txt'
 
+prefixes = {"Md", "Md.", "MD", "Sk", "Mst"}
+names_to_exclude = {"Rahaman", "Rakibul"}
+
 remove_duplicates(input_file, temp_file1)
 separate_md_names(temp_file1, temp_file2)
 process_names(temp_file1, temp_file3)
-check_bd_names(temp_file3, output_file, temp_file2)
-remove_specific_names(output_file, final_output_file)
+check_bd_names(temp_file3, output_file, temp_file2, prefixes)
+remove_specific_names(output_file, final_output_file, names_to_exclude)
