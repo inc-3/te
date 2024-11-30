@@ -1,16 +1,18 @@
+import os
+from concurrent.futures import ThreadPoolExecutor
 from BD import bdn
 
-def remove_duplicates(input_file, temp_file1):
-    with open(input_file, 'r') as infile, open(temp_file1, 'w') as outfile:
+def remove_duplicates(input_file, output_file):
+    with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
         seen = set()
         for line in infile:
             if line not in seen:
                 outfile.write(line)
                 seen.add(line)
 
-def separate_md_names(temp_file1, temp_file2):
+def separate_md_names(input_file, output_file):
     prefixes = ["Md", "Md.", "MD", "Sk"]
-    with open(temp_file1, 'r') as infile:
+    with open(input_file, 'r') as infile:
         lines = infile.readlines()
     md_lines = []
     non_md_lines = []
@@ -27,13 +29,13 @@ def separate_md_names(temp_file1, temp_file2):
         else:
             non_md_lines.append(line)
 
-    with open(temp_file2, 'w') as outfile:
+    with open(output_file, 'w') as outfile:
         outfile.writelines(md_lines)
-    with open(temp_file1, 'w') as outfile:
+    with open(input_file, 'w') as outfile:
         outfile.writelines(non_md_lines)
 
-def process_names(temp_file1, temp_file3):
-    with open(temp_file1, 'r') as infile, open(temp_file3, 'w') as outfile:
+def process_names(input_file, output_file):
+    with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
         for line in infile:
             parts = line.strip().split('|')
             if len(parts) == 2:
@@ -51,13 +53,44 @@ def process_names(temp_file1, temp_file3):
                 else:
                     outfile.write(f"{uid}|{name}\n")
 
-def check_bd_names(temp_file3, output_file, temp_file2):
-    with open(output_file, 'a') as outfile:
-        with open(temp_file3, 'r') as infile:
-            filtered_data = [line for line in infile if any(name == line.strip().split("|")[1] for name in bdn)]
-            outfile.writelines(filtered_data)
+def check_bd_names(input_file, output_file, temp_file2):
+    bdn_set = set(bdn)  # Convert to a set for faster lookup
 
-        with open(temp_file2, 'r') as infile2:
+    def process_chunk(lines, output_list):
+        local_output = []
+        for line in lines:
+            parts = line.strip().split("|")
+            if len(parts) == 2:
+                uid, name = parts
+                if name in bdn_set:
+                    local_output.append(line)
+                else:
+                    name_parts = name.split()
+                    if len(name_parts) > 0 and name_parts[0] in ["Md", "MD", "Sk", "Md.", "Mst"]:
+                        name = " ".join(name_parts[1:])
+                        local_output.append(f"{uid}|{name}\n")
+        output_list.extend(local_output)
+
+    # Read input file in chunks and process in parallel
+    with open(input_file, 'r') as infile:
+        lines = infile.readlines()
+
+    chunk_size = max(1, len(lines) // 15)  # Divide into 15 chunks
+    chunks = [lines[i:i + chunk_size] for i in range(0, len(lines), chunk_size)]
+    output_data = []
+
+    with ThreadPoolExecutor(max_workers=15) as executor:
+        futures = [executor.submit(process_chunk, chunk, output_data) for chunk in chunks]
+        for future in futures:
+            future.result()  # Wait for all chunks to complete
+
+    # Write results to the output file
+    with open(output_file, 'w') as outfile:
+        outfile.writelines(output_data)
+
+    # Process temp_file2 sequentially
+    with open(temp_file2, 'r') as infile2:
+        with open(output_file, 'a') as outfile:
             for line in infile2:
                 parts = line.strip().split('|')
                 if len(parts) == 2:
@@ -67,9 +100,9 @@ def check_bd_names(temp_file3, output_file, temp_file2):
                         name = " ".join(name_parts[1:])
                     outfile.write(f"{uid}|{name}\n")
 
-def remove_specific_names(output_file, final_output_file):
+def remove_specific_names(input_file, output_file):
     names_to_exclude = [ "Ahmed", "Rahman", "Hossain", "Alam", "Ullah", "Uddin", "Islam", "Haque", "Siddiqui", "Karim", "Chowdhury", "Ali", "Kamal", "Mahmud", "Mollah", "Bashar", "Mohammad", "Hasan"]
-    with open(output_file, 'r') as infile, open(final_output_file, 'w') as outfile:
+    with open(input_file, 'r') as infile, open(output_file, 'w') as outfile:
         for line in infile:
             parts = line.strip().split('|')
             if len(parts) == 2:
@@ -77,15 +110,34 @@ def remove_specific_names(output_file, final_output_file):
                 if name not in names_to_exclude:
                     outfile.write(line)
 
-input_file = input("Input file: ")
-temp_file1 = '/sdcard/temp1.txt'
-temp_file2 = '/sdcard/temp2.txt'
-temp_file3 = '/sdcard/temp3.txt'
-output_file = '/sdcard/y.txt'
-final_output_file = '/sdcard/final_output.txt'
+def process_files(input_file, output_file, final_output_files):
+    temp_file1 = 'temp1.txt'
+    temp_file2 = 'temp2.txt'
+    temp_file3 = 'temp3.txt'
 
-remove_duplicates(input_file, temp_file1)
-separate_md_names(temp_file1, temp_file2)
-process_names(temp_file1, temp_file3)
-check_bd_names(temp_file3, output_file, temp_file2)
-remove_specific_names(output_file, final_output_file)
+    # Use ThreadPoolExecutor for parallel execution
+    with ThreadPoolExecutor(max_workers=15) as executor:
+        future1 = executor.submit(remove_duplicates, input_file, temp_file1)
+        future2 = executor.submit(separate_md_names, temp_file1, temp_file2)
+        future3 = executor.submit(process_names, temp_file1, temp_file3)
+
+        # Wait for all tasks to complete
+        future1.result()
+        future2.result()
+        future3.result()
+
+    # Optimized check_bd_names
+    check_bd_names(temp_file3, output_file, temp_file2)
+    remove_specific_names(output_file, final_output_files)
+
+    # Clean up temporary files
+    os.remove(temp_file1)
+    os.remove(temp_file2)
+    os.remove(temp_file3)
+
+# Input and output files
+input_file = input("Input file: ")
+output_file = input("Output file: ")
+final_output_files = input("Final output file: ")
+
+process_files(input_file, output_file, final_output_files)
