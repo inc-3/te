@@ -110,7 +110,7 @@ temp_file3 = '/sdcard/temp3.txt'
 temp_file4 = '/sdcard/temp4.txt'
 output_file = input(" Output file: ")
 
-prefixes = {"Md", "Md.", "MD", "Sk"}
+prefixes = {"Md", "Md.", "MD", "Sk", "Mst"}
 names_to_exclude = {"Ahmed", "Rahman", "Hossain", "Alam", "Ullah", "Uddin", "Islam", "Haque", "Siddiqui", "Karim", "Chowdhury", "Ali", "Kamal", "Mahmud", "Mollah", "Bashar", "Mohammad", "Hasan"}
 
 remove_duplicates(input_file, temp_file1)
